@@ -13,9 +13,11 @@ contract factory {
     function createOrg(
         string memory tokenname,
         string memory tokensymbol,
-        address _token
+        address _token,
+        address _admin
     ) public returns (address) {
-        Organization newOrg = new Organization(tokenname, tokensymbol, _token);
+        require(_admin == msg.sender, "admin doesn't correspond");
+        Organization newOrg = new Organization(tokenname, tokensymbol, _token, _admin);
         address newAdd = address(newOrg);
         adminOrg[msg.sender] = newAdd;
         return newAdd;

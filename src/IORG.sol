@@ -22,5 +22,7 @@ interface IORG {
         address _user
     ) external view returns (string memory, bool, uint256, uint256, uint256);
 
+    function calInterest(address _user) external view returns (uint256);
+
     function withdrawal(address _user) external;
 }

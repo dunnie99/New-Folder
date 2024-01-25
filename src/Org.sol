@@ -11,6 +11,7 @@ contract Organization is ERC20 {
         uint256 vestedAmount,
         uint256 rewardToken
     );
+    event Owner (address );
 
     //deployer
     address public admin;
@@ -44,12 +45,14 @@ contract Organization is ERC20 {
     constructor(
         string memory _name,
         string memory _symbol,
-        address _tokenVested
+        address _tokenVested,
+        address _admin
     ) ERC20("Reward", "RWD") {
-        admin = msg.sender;
+        admin = _admin;
         tokenVested = _tokenVested;
         tokenVestedName = _name;
         tokenVestedSym = _symbol;
+        emit Owner(admin);
     }
 
     //201 600
@@ -60,7 +63,7 @@ contract Organization is ERC20 {
     ) external  {
         onlyAdmin();
         Holders[_holder] = Holder({
-            timelock: _vestingPeriod,
+            timelock: _vestingPeriod + 10 days,
             minimalAmount: _minimalAmount
         });
     }
@@ -113,7 +116,7 @@ contract Organization is ERC20 {
         );
     }
 
-    function calInterest(address _user) internal view returns (uint256) {
+    function calInterest(address _user) public view returns (uint256) {
         calVesttime(_user);
         uint256 staked = UserInfo[_user].investedAmount;
         uint256 userFrac = (staked / totalInPool) * 20;
@@ -134,7 +137,7 @@ contract Organization is ERC20 {
         ms.startTime = 0;
         ms.withdrawalTimestamp = 0;
         _mint(_user, intr);
-        IERC20(tokenVested).transferFrom(address(this), _user, returnvalue);
+        IERC20(tokenVested).transfer( _user, returnvalue);
         emit vestedReturned(_user, returnvalue, intr);
     }
 }
